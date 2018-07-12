@@ -1,0 +1,60 @@
+---
+- name: Get consul template
+  get_url: 
+   url: "{{ item.url }}"
+   dest: "{{ item.dest }}"
+   validate_certs: no
+  with_items: 
+   - url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version }}_linux_amd64.zip"  
+     dest: /tmp/consul-template.zip
+
+- name: Install package unzip
+  yum: 
+   name: unzip 
+   state: present
+
+- name: Unzip consul-template
+  command: unzip /tmp/consul-template.zip -d /usr/bin/
+  args: 
+   creates: /usr/bin/consul-template
+
+- name: Make consul-template app executable
+  file: path=/usr/bin/consul-template mode=0755 owner=consul group=consul
+
+- name: Install haproxy
+  yum: name={{ item }} state=present
+  with_items:
+    - haproxy
+    - socat
+
+- name: Copy haproxy configure template
+  template: src=haproxy.ctmpl.j2 dest=/tmp/haproxy.ctmpl
+
+- name: Copy Reload HAProxy
+  copy: src=reloadhaproxy.sh dest=/etc/haproxy/reloadhaproxy.sh
+
+- name: Copy run consul template script
+  template: src=runconsultemp.sh.j2 dest=/tmp/runconsultemp.sh
+
+- name: Make RELOAD HAPROXY SCRIPT executable
+  file:
+   path: /etc/haproxy/reloadhaproxy.sh
+   mode: 0755
+
+- name: Make RUN CONSUL TEMPLATE SCRIPT executable
+  file:
+   path: /tmp/runconsultemp.sh
+   mode: 0755
+
+- name: Kill consul-template process
+  shell: |
+    for i in $(ps -aux|grep consul-template|awk -F " " '{print $2}');do 
+       kill -9 $i
+    done
+  args:
+    executable: /bin/bash
+  ignore_errors: yes
+
+- name: Run Consul Template
+  command: sh /tmp/runconsultemp.sh
+

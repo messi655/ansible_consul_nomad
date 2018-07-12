@@ -1,0 +1,17 @@
+---
+# Consul 
+consul_ip: "{{ ansible_default_ipv4.address }}"
+consul_port: 8500
+consul_url: "http://{{ consul_ip }}:{{ consul_port }}"
+consul_domain: consul
+consul_datacenter: your data center
+
+# Nomad
+nomad_datacenter: "your data center"
+private_ip_interface: eth0
+region: "your region"
+
+
+
+
+

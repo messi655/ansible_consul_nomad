@@ -1,0 +1,35 @@
+nomad1 ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_port=22
+nomad2 ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_port=22
+nomad3 ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_port=22
+nomad4 ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_port=22
+nomad5 ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_port=22
+
+
+
+[control_nodes]
+nomad1
+nomad2
+
+
+[control_nodes:vars]
+consul_master=yes 
+consul_join=no 
+consul_server=yes
+nomad_master=yes
+nomad_server=yes
+
+[resource_nodes]
+nomad3
+nomad4
+nomad5
+
+
+[resource_nodes:vars]
+consul_master=no 
+consul_join=yes 
+consul_server=no
+nomad_master=no 
+nomad_server=no
+
+[test]
+nomad1

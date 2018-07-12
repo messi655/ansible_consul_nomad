@@ -1,0 +1,12 @@
+---
+- name: Get Docker CE repository
+  command: 'wget -nv https://download.docker.com/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo'
+
+- name: Install Docker engine
+  yum: name=docker-ce state=latest
+
+- name: Enable docker at boot time
+  service: name=docker enabled=yes
+
+- name: Check Docker service status
+  command: systemctl restart docker

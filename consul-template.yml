@@ -1,0 +1,6 @@
+---
+- hosts: consul_temp
+  remote_user: centos
+  sudo: true
+  roles:
+   - { role: consul-template, tags: consul-template }

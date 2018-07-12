@@ -1,0 +1,46 @@
+---
+- hosts: control_nodes
+  remote_user: centos
+  sudo: true
+  serial: 1
+  roles:
+   - { role: consul, tags: consul }
+
+- hosts: resource_nodes
+  remote_user: centos
+  sudo: true
+  roles:
+   - { role: consul, tags: consul }
+
+- hosts: all
+  remote_user: centos
+  sudo: true
+  roles:
+   - { role: docker, tags: docker }
+
+- hosts: control_nodes
+  remote_user: centos
+  sudo: true
+  serial: 1
+  roles:
+   - { role: nomad, tags: nomad }
+
+- hosts: resource_nodes
+  remote_user: centos
+  sudo: true
+  roles:
+   - { role: nomad, tags: nomad }
+
+- hosts: test
+  remote_user: centos
+  sudo: true
+  roles:
+   - { role: test, tags: test }
+
+- hosts: test
+  remote_user: centos
+  sudo: true
+  roles:
+   - { role: consul-template, tags: consul-template }
+
+

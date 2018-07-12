@@ -1,0 +1,63 @@
+global
+    pidfile /var/run/haproxy.pid
+    daemon
+    user haproxy
+    group haproxy
+    stats socket /var/run/haproxy.socket user haproxy group haproxy mode 600 level admin
+    description haproxy server
+    log         127.0.0.1 local2
+    #* Performance Tuning
+    maxconn 8192
+    spread-checks 3
+    quiet
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+listen haproxy-monitoring *:9700                
+    mode http
+    option forwardfor
+    option httpclose
+    option httpchk HEAD / HTTP/1.0
+    stats enable
+    stats show-legends
+    stats refresh 15s
+    stats uri /stats                            
+    stats realm Haproxy\ Statistics
+    stats auth admin:{{ haproxy_admin_password }}            
+    stats admin if TRUE
+
+listen {{ djbackend_nomad_job }}
+    bind *:50000 
+    
+    {{ '{{ range service' }} "{{ djbackend_nomad_job }}" {{  '}}' }}
+    server {{ '{{.Node}} {{.Address}}:{{.Port}} check {{end}}' }}
+
+listen {{ djfrontend_nomad_job }}
+    bind *:40000 
+    {{ '{{ range service' }} "{{ djfrontend_nomad_job }}" {{  '}}' }}
+    server {{ '{{.Node}} {{.Address}}:{{.Port}}{{end}}' }}
+
+listen {{ djdashboard_nomad_job }}
+    bind *:30000 
+    {{ '{{ range service' }} "{{ djdashboard_nomad_job }}" {{  '}}' }}
+    server {{ '{{.Node}} {{.Address}}:{{.Port}}{{end}}' }}
+
+
+
+
+

@@ -1,0 +1,6 @@
+---
+- name: Copy nginx nomad
+  template: src=nginx.nomad.j2 dest=/tmp/nginx.nomad
+
+- name: Run nomad deploy
+  command: nomad run /tmp/nginx.nomad

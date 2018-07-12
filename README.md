@@ -1,4 +1,9 @@
 Automation deploy Nomad and Consul
+# What is Nomad
+- https://www.nomadproject.io/
+
+# What is Consul
+- https://www.consul.io/
 
 # Requirement
 - Ansible ansible 2.4.3.0
